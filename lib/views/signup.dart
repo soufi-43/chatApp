@@ -1,4 +1,5 @@
 import 'package:chatapp/services/auth.dart';
+import 'package:chatapp/services/database.dart';
 import 'package:chatapp/views/chatRoomScreen.dart';
 import 'package:chatapp/widgets/widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,15 +9,15 @@ class SignUp extends StatefulWidget {
   final Function toggle;
 
   SignUp(this.toggle);
+
   @override
   _SignUpState createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
+  AuthMethods authMethods = new AuthMethods();
 
-
-  AuthMethods authMethods = new AuthMethods() ;
-
+  DatabaseMethods databaseMethods = new DatabaseMethods();
 
   TextEditingController userNameTextEditingController =
       new TextEditingController();
@@ -30,23 +31,33 @@ class _SignUpState extends State<SignUp> {
 
   signMeUp() {
     if (formKey.currentState.validate()) {
+      Map<String, String> userInfoMap = {
+        "name": userNameTextEditingController.text,
+        "email": emailTextEditingController.text,
+      };
+
       setState(() {
         isLoading = true;
       });
 
-      authMethods.signUpWithEmailAndPassword(emailTextEditingController.text, passwordTextEditingController.text).then((val){
-         Navigator.pushReplacement(context, MaterialPageRoute(
-           builder: (context)=>ChatRoom(),
-         ));
+      authMethods
+          .signUpWithEmailAndPassword(emailTextEditingController.text,
+              passwordTextEditingController.text)
+          .then((val) {
+        databaseMethods.uploadUserInfo(userInfoMap);
+
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatRoom(),
+            ));
 
         setState(() {
-          isLoading=false ;
+          isLoading = false;
         });
-
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +136,7 @@ class _SignUpState extends State<SignUp> {
                         height: 8,
                       ),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           signMeUp();
                         },
                         child: Container(
@@ -172,7 +183,7 @@ class _SignUpState extends State<SignUp> {
                             style: mediumTextStyle(),
                           ),
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               widget.toggle();
                             },
                             child: Container(
