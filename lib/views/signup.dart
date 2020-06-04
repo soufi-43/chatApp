@@ -1,3 +1,4 @@
+import 'package:chatapp/helper/helperfunctions.dart';
 import 'package:chatapp/services/auth.dart';
 import 'package:chatapp/services/database.dart';
 import 'package:chatapp/views/chatRoomScreen.dart';
@@ -35,6 +36,11 @@ class _SignUpState extends State<SignUp> {
         "name": userNameTextEditingController.text,
         "email": emailTextEditingController.text,
       };
+
+      HelperFunctions.saveUserNameInSharedPreference(userNameTextEditingController.text);
+      HelperFunctions.saveUserEmailInSharedPreference(emailTextEditingController.text);
+
+
 
       setState(() {
         isLoading = true;
